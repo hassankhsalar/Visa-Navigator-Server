@@ -28,19 +28,17 @@ async function run() {
 
     const userCollection = client.db('visaDB').collection('users');
 
-    // GET /visa - Fetch the latest 6 visas
-    app.get('/visa', async (req, res) => {
-      try {
-        const cursor = visaCollection.find()
-          .sort({ _id: -1 })
-          .limit(6);
-        const result = await cursor.toArray();
-        res.send(result);
-      } catch (err) {
-        console.error('Error fetching visas:', err);
-        res.status(500).send('Error fetching visa data');
-      }
-    });
+    // GET /visa - Fetch all visas
+app.get('/visa', async (req, res) => {
+  try {
+    const cursor = visaCollection.find().sort({ _id: -1 }); // Fetch all visas sorted by latest
+    const result = await cursor.toArray();
+    res.send(result); // Send all data to the frontend
+  } catch (err) {
+    console.error('Error fetching visas:', err);
+    res.status(500).send('Error fetching visa data');
+  }
+});
 
     // GET /visa/:id - Fetch a single visa by ID
     app.get('/visa/:id', async (req, res) => {
@@ -89,17 +87,60 @@ async function run() {
       
 
 
-    // POST /visa - Insert a new visa
-    app.post('/visa', async (req, res) => {
-      const newVisa = req.body;
-      try {
-        const result = await visaCollection.insertOne(newVisa);
-        res.send(result);
-      } catch (err) {
-        console.error('Error inserting new visa:', err);
-        res.status(500).send('Error inserting visa data');
-      }
-    });
+    // POST /visa - Add new visa
+app.post('/visa', async (req, res) => {
+  try {
+    const newVisa = req.body;
+    const result = await visaCollection.insertOne(newVisa);
+    res.send(result);
+  } catch (err) {
+    console.error('Error adding visa:', err);
+    res.status(500).send('Error adding visa');
+  }
+});
+
+//update added visa api
+app.put('/visa/:id', async (req, res) => {
+  const id = req.params.id;
+  const updatedVisa = req.body;
+
+  try {
+    const result = await visaCollection.updateOne(
+      { _id: new ObjectId(id) }, // Ensure you're using `ObjectId` from MongoDB
+      { $set: updatedVisa }
+    );
+    res.send(result);
+  } catch (err) {
+    console.error('Error updating visa:', err);
+    res.status(500).send('Error updating visa');
+  }
+});
+
+//delete added visa api
+// DELETE /visa/:id
+app.delete('/visa/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const result = await visaCollection.deleteOne({ _id: new ObjectId(id) });
+    res.send(result);
+  } catch (err) {
+    console.error('Error deleting visa:', err);
+    res.status(500).send('Error deleting visa');
+  }
+});
+
+// GET /my-visas - Fetch visas by logged-in user's email
+app.get('/my-visas', async (req, res) => {
+  const userEmail = req.query.email; // Expect user's email in the query
+  try {
+    const result = await visaCollection.find({ userEmail }).toArray();
+    res.send(result);
+  } catch (err) {
+    console.error('Error fetching user visas:', err);
+    res.status(500).send('Error fetching user visas');
+  }
+});
+
 
     //user related api
     app.post('/users', async (req, res) => {
@@ -129,6 +170,25 @@ app.post('/applications', async (req, res) => {
     res.status(500).send({ message: 'Failed to save application.' });
   }
 });
+
+//application delete api
+app.delete('/applications/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await applicationsCollection.deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 1) {
+      res.status(200).send({ message: 'Application deleted successfully.' });
+    } else {
+      res.status(404).send({ message: 'Application not found.' });
+    }
+  } catch (error) {
+    console.error('Error deleting application:', error);
+    res.status(500).send({ message: 'Failed to delete application.' });
+  }
+});
+
 
       
 
