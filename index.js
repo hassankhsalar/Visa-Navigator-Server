@@ -31,9 +31,9 @@ async function run() {
     // GET /visa - Fetch all visas
 app.get('/visa', async (req, res) => {
   try {
-    const cursor = visaCollection.find().sort({ _id: -1 }); // Fetch all visas sorted by latest
+    const cursor = visaCollection.find().sort({ _id: -1 }); // 
     const result = await cursor.toArray();
-    res.send(result); // Send all data to the frontend
+    res.send(result); 
   } catch (err) {
     console.error('Error fetching visas:', err);
     res.status(500).send('Error fetching visa data');
@@ -72,9 +72,9 @@ app.get('/visa', async (req, res) => {
 
       //application fetch api
       app.get('/applications', async (req, res) => {
-        const { email } = req.query; // Example: Filter by email
+        const { email } = req.query; 
         try {
-          const query = email ? { email } : {}; // Optional email filter
+          const query = email ? { email } : {}; 
           const applications = await applicationsCollection.find(query).toArray();
       
           res.send(applications);
@@ -106,7 +106,7 @@ app.put('/visa/:id', async (req, res) => {
 
   try {
     const result = await visaCollection.updateOne(
-      { _id: new ObjectId(id) }, // Ensure you're using `ObjectId` from MongoDB
+      { _id: new ObjectId(id) }, 
       { $set: updatedVisa }
     );
     res.send(result);
@@ -131,7 +131,7 @@ app.delete('/visa/:id', async (req, res) => {
 
 // GET /my-visas - Fetch visas by logged-in user's email
 app.get('/my-visas', async (req, res) => {
-  const userEmail = req.query.email; // Expect user's email in the query
+  const userEmail = req.query.email; 
   try {
     const result = await visaCollection.find({ userEmail }).toArray();
     res.send(result);
@@ -155,7 +155,7 @@ app.get('/my-visas', async (req, res) => {
       });
 
       //applications related api
-      const applicationsCollection = client.db('visaDB').collection('applications'); // Define applications collection
+      const applicationsCollection = client.db('visaDB').collection('applications'); 
 
 app.post('/applications', async (req, res) => {
   try {
