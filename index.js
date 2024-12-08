@@ -23,7 +23,7 @@ const client = new MongoClient(uri, {
 // MongoDB connection and route handling
 async function run() {
   try {
-    await client.connect();
+    //await client.connect();
     const visaCollection = client.db('visaDB').collection('visa');
 
     const userCollection = client.db('visaDB').collection('users');
@@ -193,7 +193,7 @@ app.delete('/applications/:id', async (req, res) => {
       
 
     // Ping the MongoDB server
-    await client.db("admin").command({ ping: 1 });
+    //await client.db("admin").command({ ping: 1 });
     console.log("Successfully connected to MongoDB!");
 
   } catch (error) {
